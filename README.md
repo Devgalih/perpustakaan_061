@@ -4,7 +4,7 @@ Folder ini berisi file-file untuk membuat database sistem perpustakaan sesuai de
 
 ## 📁 File yang Tersedia
 
-### 1. `perpustakaan.sql`
+### 1. `perpustakaan.sql` / `db_perpus.sql`
 File SQL utama untuk membuat database dan semua tabel:
 - Database: `perpustakaan`
 - Tabel: `admin`, `anggota`, `buku`, `kategori`, `buku_kategori`, `booking`, `peminjaman`
@@ -53,7 +53,7 @@ Script PowerShell untuk mengecek status MySQL service di Windows.
 
 ### Langkah 3: Import Database
 - Klik tab **SQL** di phpMyAdmin
-- Copy-paste isi file `perpustakaan.sql`
+- Copy-paste isi file `perpustakaan.sql` atau `db_perpus.sql`
 - Klik **Go**
 - Database `perpustakaan` akan dibuat dengan semua tabel
 
@@ -104,4 +104,3 @@ Jika mengalami masalah, baca file **TROUBLESHOOTING_PHPMYADMIN.md** untuk solusi
 ---
 
 **Selamat menggunakan!** 🎉
-
