@@ -1,3 +1,40 @@
+<?php
+require_once __DIR__ . '/config/bootstrap.php';
+
+if (!empty($_SESSION['admin_id'])) {
+    redirect('index.php');
+}
+
+$error = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $username = trim($_POST['username'] ?? '');
+    $password = trim($_POST['password'] ?? '');
+
+    if ($username === '' || $password === '') {
+        $error = 'Username dan password wajib diisi.';
+    } else {
+        $stmt = db()->prepare('SELECT id_admin, username, password, nama_lengkap FROM admin WHERE username = ? OR email = ? LIMIT 1');
+        $stmt->bind_param('ss', $username, $username);
+        $stmt->execute();
+        $result = $stmt->get_result()->fetch_assoc();
+
+        if (!$result) {
+            $error = 'Pengguna tidak ditemukan.';
+        } else {
+            $isValid = password_verify($password, $result['password']) || $password === $result['password'];
+            if ($isValid) {
+                $_SESSION['admin_id'] = $result['id_admin'];
+                $_SESSION['admin_name'] = $result['nama_lengkap'] ?: $result['username'];
+                redirect('index.php');
+            } else {
+                $error = 'Password salah.';
+            }
+        }
+        $stmt->close();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -20,13 +57,18 @@
                                 <div class="card shadow-lg border-0 rounded-lg mt-5">
                                     <div class="card-header"><h3 class="text-center font-weight-light my-4">Login</h3></div>
                                     <div class="card-body">
-                                        <form>
+                                        <?php if ($error): ?>
+                                            <div class="alert alert-danger">
+                                                <?php echo e($error); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        <form method="post" novalidate>
                                             <div class="form-floating mb-3">
-                                                <input class="form-control" id="inputEmail" type="email" placeholder="name@example.com" />
-                                                <label for="inputEmail">Username</label>
+                                                <input class="form-control" id="inputUsername" name="username" type="text" placeholder="Username atau email" required />
+                                                <label for="inputUsername">Username / Email</label>
                                             </div>
                                             <div class="form-floating mb-3">
-                                                <input class="form-control" id="inputPassword" type="password" placeholder="Password" />
+                                                <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Password" required />
                                                 <label for="inputPassword">Password</label>
                                             </div>
                                             <div class="form-check mb-3">
@@ -35,7 +77,7 @@
                                             </div>
                                             <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
                                                 <span class="small">Forgot Password?</span>
-                                                <button class="btn btn-primary" href="index.html">Login</button>
+                                                <button type="submit" class="btn btn-primary">Login</button>
                                             </div>
                                         </form>
                                     </div>

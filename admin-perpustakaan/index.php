@@ -1,9 +1,12 @@
 <?php
 define('MY_APP', true);
+require_once __DIR__ . '/config/bootstrap.php';
 
-// Get hal
-$page = isset($_GET['hal']) ? $_GET['hal'] : 'dashboard';
-// title untuk di header
+if (empty($_SESSION['admin_id'])) {
+    redirect('login.php');
+}
+
+$page = isset($_GET['hal']) ? preg_replace('/[^a-z0-9\-]/i', '', $_GET['hal']) : 'dashboard';
 $title = ucwords(str_replace('-', ' ', $page));
 ?>
 
@@ -17,7 +20,8 @@ $title = ucwords(str_replace('-', ' ', $page));
         <div id="layoutSidenav">
             <?php include "includes/sidebar.php" ?>
             <div id="layoutSidenav_content">
-                <main>
+                <main class="container-fluid px-4 py-4">
+                    <?php displayFlash(); ?>
                     <?php 
                     $file = "pages/" . $page . ".php";
                     if(file_exists($file)) {
